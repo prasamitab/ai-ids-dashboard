@@ -3,31 +3,8 @@ import pandas as pd
 import joblib
 import numpy as np
 import matplotlib.pyplot as plt
-import streamlit_authenticator as stauth
-from datetime import datetime
 
-# Secure login setup
-names = ["Prasamita"]
-usernames = ["prasamitab"]
-passwords = ["secure@123"]  # You can hash real passwords securely later
-
-hashed_passwords = stauth.Hasher(passwords).generate()
-
-authenticator = stauth.Authenticate(
-    names, usernames, hashed_passwords,
-    "ids_dashboard", "abcdef", cookie_expiry_days=1
-)
-
-name, auth_status, username = authenticator.login("Login", "main")
-
-if auth_status is False:
-    st.error("❌ Incorrect username or password")
-elif auth_status is None:
-    st.warning("👤 Please log in to continue")
-else:
     authenticator.logout("Logout", "sidebar")
-    st.success(f"✅ Welcome {name}!")
-
     st.set_page_config(page_title="AI IDS", layout="centered")
 
     # Styled Header
