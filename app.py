@@ -27,7 +27,7 @@ st.markdown(f"""
 <div style='{style} padding: 10px;'>
 <h1 style='text-align: center;'> AI-Powered Intrusion Detection System 🔐</h1>
 <h4 style='text-align: center;'>Detect cyber attacks in real-time using Machine Learning</h4>
-<p style='text-align: center; font-size: 14px;'>Built by <b>Prasamita B.</b> | Mahindra University</p></div>
+<p style='text-align: center; font-size: 14px;'>Built by <b>Prasamita Bangal.</b> | Mahindra University</p></div>
 <hr style='border-top: 2px solid #bbb;'>
 """, unsafe_allow_html=True)
 
