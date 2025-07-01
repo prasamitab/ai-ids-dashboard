@@ -29,15 +29,16 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Load model and feature list
+model_choice = st.sidebar.selectbox("🧠 Choose a Model", ["Random Forest", "Logistic Regression"])
+
 @st.cache_resource
-def load_resources():
-    model_choice = st.sidebar.selectbox("🧠 Choose a Model", ["Random Forest", "Logistic Regression"])
-    model_file = "ids_model.pkl" if model_choice == "Random Forest" else "logistic_model.pkl"
+def load_resources(choice):
+        model_file = "ids_model.pkl" if choice == "Random Forest" else "logistic_model.pkl"
     model = joblib.load(model_file)
     feature_list = joblib.load("model_features.pkl")
     return model, feature_list
 
-model, feature_list = load_resources()
+model, feature_list = load_resources(model_choice)
 
 # Sidebar
 with st.sidebar:
