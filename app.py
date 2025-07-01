@@ -139,24 +139,23 @@ if st.session_state.get("sample_loaded"):
     st.pyplot(fig_cm)
 
     st.markdown("---")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.subheader("📌 Top 10 Feature Importances")
+    st.subheader("📌 Top 10 Feature Importances")
     importances = model.feature_importances_
     feat_series = pd.Series(importances, index=feature_list).sort_values(ascending=False).head(10)
-            st.bar_chart(feat_series)
+    st.bar_chart(feat_series)
 
-        with col2:
         st.subheader("🔍 SHAP Explanation (Row 0)")
-        try:
-            shap_explainer = joblib.load("shap_explainer.pkl")
-            selected_row = data.iloc[[0]][feature_list]
-            shap_values = shap_explainer(selected_row)
-            shap_df = pd.DataFrame({
-                "Feature": feature_list,
-                "SHAP Value": shap_values.values[0]
-            }).sort_values("SHAP Value", key=abs, ascending=False).head(10)
-            st.bar_chart(shap_df.set_index("Feature"))
+    try:
+        shap_explainer = joblib.load("shap_explainer.pkl")
+        selected_row = data.iloc[[0]][feature_list]
+        shap_values = shap_explainer(selected_row)
+        shap_df = pd.DataFrame({
+            "Feature": feature_list,
+            "SHAP Value": shap_values.values[0]
+        }).sort_values("SHAP Value", key=abs, ascending=False).head(10)
+        st.bar_chart(shap_df.set_index("Feature"))
+    except Exception as e:
+        st.error("SHAP explanation could not be loaded. Ensure shap_explainer.pkl is valid.")
         except Exception as e:
             st.error("SHAP explanation could not be loaded. Ensure shap_explainer.pkl is valid.")
 
@@ -214,7 +213,7 @@ if st.session_state.get("sample_loaded"):
 
     st.markdown("---")
     with st.expander("🧠 How This Works"):
-    st.caption("🟢 = Normal Traffic  🔴 = Attack Traffic")
+        st.caption("🟢 = Normal Traffic  🔴 = Attack Traffic")
     st.caption("📶 Confidence = Model's certainty in its prediction")
     st.caption("📊 Streaming Simulation = Real-time row-by-row intrusion demo")
     st.markdown("""
