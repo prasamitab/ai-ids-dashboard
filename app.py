@@ -77,6 +77,7 @@ with st.sidebar:
             f.write(f"{datetime.now()} - {feedback_name}: {feedback_text}\n")
 
 # Sample data button
+data = None
 if st.button("✨ Try with Sample Data"):
     data = pd.read_csv("preprocessed_test_sample_fixed.csv")
     st.session_state["sample_loaded"] = True
@@ -87,7 +88,7 @@ else:
         st.session_state["sample_loaded"] = True
 
 # Run predictions
-if st.session_state.get("sample_loaded"):
+if st.session_state.get("sample_loaded") and data is not None:
     data = data.reindex(columns=feature_list, fill_value=0)
     st.subheader("1️⃣ 🔍 Data Preview")
     st.dataframe(data.head())
