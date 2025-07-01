@@ -91,7 +91,7 @@ else:
 if st.session_state.get("sample_loaded"):
     data = data.reindex(columns=feature_list, fill_value=0)
     st.markdown(f"<div style='{style} padding:10px'>", unsafe_allow_html=True)
-st.subheader("🔍 Data Preview")
+    st.subheader("🔍 Data Preview")
     st.dataframe(data.head())
 
     predictions = model.predict(data)
