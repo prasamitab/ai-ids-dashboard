@@ -141,6 +141,8 @@ if st.session_state.get("sample_loaded"):
     st.markdown("---")
     st.markdown(f"<div style='{style} padding:10px'>", unsafe_allow_html=True)
     st.subheader("🔍 Explain a Prediction with SHAP")
+    import os
+    st.write("📂 Files in app directory:", os.listdir())
     try:
         shap_explainer = joblib.load("shap_explainer.pkl")
         row_index = st.number_input("Choose a row index to explain (0–49 recommended):", min_value=0, max_value=min(len(data)-1, 49), value=0)
