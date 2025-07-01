@@ -46,6 +46,18 @@ model, feature_list = load_resources(model_choice)
 with st.sidebar:
     st.title("📘 About the App")
     st.markdown("""
+    ## 🧭 Navigation
+    - 1️⃣ [Data Preview](#1️⃣-🔍-data-preview)
+    - 2️⃣ [Summary Metrics](#2️⃣-📊-summary-metrics)
+    - 3️⃣ [Prediction Breakdown](#3️⃣-📊-prediction-breakdown)
+    - 4️⃣ [Accuracy & Confusion Matrix](#4️⃣-🧪-model-accuracy--confusion-matrix)
+    - 5️⃣ [Top Features](#5️⃣-📌-top-10-feature-importances)
+    - 6️⃣ [SHAP Explanation](#6️⃣-🔍-shap-explanation-row-0)
+    - 7️⃣ [Streaming Simulation](#7️⃣-📺-live-streaming-simulation)
+    - 8️⃣ [Attack Map](#8️⃣-🗺️-simulated-attack-map)
+    - 9️⃣ [Full Predictions](#9️⃣-📄-full-predictions-top-25)
+    """, unsafe_allow_html=True)
+    st.markdown("""
     This is a lightweight, AI-powered intrusion detection dashboard built with:
 
     - ✅ Random Forest classifier  
@@ -77,7 +89,7 @@ else:
 # Run predictions
 if st.session_state.get("sample_loaded"):
     data = data.reindex(columns=feature_list, fill_value=0)
-    st.subheader("🔍 Data Preview")
+    st.subheader("1️⃣ 🔍 Data Preview")
     st.dataframe(data.head())
 
     predictions = model.predict(data)
@@ -92,7 +104,7 @@ if st.session_state.get("sample_loaded"):
     total_normal = data["Prediction"].value_counts().get("Normal", 0)
 
     st.markdown("---")
-    st.subheader("📊 Summary Metrics")
+    st.subheader("2️⃣ 📊 Summary Metrics")
     st.metric("Total Records", len(data))
     st.metric("Attacks Detected", total_attacks)
     st.metric("Normal Traffic", total_normal)
@@ -106,7 +118,7 @@ if st.session_state.get("sample_loaded"):
     st.dataframe(summary_df)
 
     st.markdown("---")
-    st.subheader("📊 Prediction Breakdown")
+    st.subheader("3️⃣ 📊 Prediction Breakdown")
     pred_counts = data["Prediction"].value_counts()
     colors = ["#2ecc71" if label == "Normal" else "#e74c3c" for label in pred_counts.index]
     fig, ax = plt.subplots()
@@ -125,7 +137,7 @@ if st.session_state.get("sample_loaded"):
     st.caption("🟢 Green = Normal   🔴 Red = Attack")
 
     st.markdown("---")
-    st.subheader("🧪 Model Accuracy & Confusion Matrix")
+    st.subheader("4️⃣ 🧪 Model Accuracy & Confusion Matrix")
     true_labels = [1 if lbl == "Normal" else 0 for lbl in labels]
     cm = confusion_matrix(true_labels, predictions)
     acc = accuracy_score(true_labels, predictions)
@@ -138,12 +150,12 @@ if st.session_state.get("sample_loaded"):
     st.pyplot(fig_cm)
 
     st.markdown("---")
-    st.subheader("📌 Top 10 Feature Importances")
+    st.subheader("5️⃣ 📌 Top 10 Feature Importances")
     importances = model.feature_importances_
     feat_series = pd.Series(importances, index=feature_list).sort_values(ascending=False).head(10)
     st.bar_chart(feat_series)
 
-    st.subheader("🔍 SHAP Explanation (Row 0)")
+    st.subheader("6️⃣ 🔍 SHAP Explanation (Row 0)")
     try:
         shap_explainer = joblib.load("shap_explainer.pkl")
         selected_row = data.iloc[[0]][feature_list]
@@ -157,7 +169,7 @@ if st.session_state.get("sample_loaded"):
         st.error("SHAP explanation could not be loaded. Ensure shap_explainer.pkl is valid.")
 
     st.markdown("---")
-    st.subheader("📺 Live Streaming Simulation")
+    st.subheader("7️⃣ 📺 Live Streaming Simulation")
     if st.button("▶️ Start Stream Simulation"):
         import time
         live_placeholder = st.empty()
@@ -170,7 +182,7 @@ if st.session_state.get("sample_loaded"):
             time.sleep(0.6)
 
     st.markdown("---")
-    st.subheader("🗺️ Simulated Attack Map")
+    st.subheader("8️⃣ 🗺️ Simulated Attack Map")
     try:
         attack_data = data[data['Prediction'] == 'Attack'].copy()
         if not attack_data.empty:
@@ -194,7 +206,7 @@ if st.session_state.get("sample_loaded"):
     except Exception as e:
         st.error("Could not generate attack map. Error: " + str(e))
 
-    st.subheader("📄 Full Predictions (Top 25)")
+    st.subheader("9️⃣ 📄 Full Predictions (Top 25)")
     threat_emojis = ["🛡️" if lbl == "Normal" else "😈" for lbl in data["Prediction"]]
     display_data = data.copy()
     display_data.insert(0, "🔒 Threat", threat_emojis)
