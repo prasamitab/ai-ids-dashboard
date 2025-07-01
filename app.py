@@ -47,14 +47,15 @@ with st.sidebar:
     st.title(" About the App")
     st.markdown("""
     ##  Navigation
-    - 1] [Data Preview](# 1.--data-preview)
-    - 2] [Summary Metrics](# 2.--summary-metrics)
-    - 3] [Prediction Breakdown](# 3.--prediction-breakdown)
-    - 4] [Accuracy & Confusion Matrix](# 4.--model-accuracy--confusion-matrix)
-    - 5] [Top Features](# 5.--top-10-feature-importances)
-    - 6] [Streaming Simulation](# 6.-📺-live-streaming-simulation)
-    - 7] [Attack Map](# 7.--simulated-attack-map)
-    - 8] [Full Predictions](# 8.-📄-full-predictions-top-25)
+    - 1] [Data Preview](#1️⃣-🔍-data-preview)
+    - 2] [Summary Metrics](#2️⃣-📊-summary-metrics)
+    - 3] [Prediction Breakdown](#3️⃣-📊-prediction-breakdown)
+    - 4] [Accuracy & Confusion Matrix](#4️⃣-🧪-model-accuracy--confusion-matrix)
+    - 5] [Top Features](#5️⃣-📌-top-10-feature-importances)
+    - 6] [Streaming Simulation](#7️⃣-📺-live-streaming-simulation)
+    - 7] [Attack Map](#8️⃣-🗺️-simulated-attack-map)
+    - 8] [Full Predictions](#9️⃣-📄-full-predictions-top-25)
+
     """, unsafe_allow_html=True)
     st.markdown("""
     This is a lightweight, AI-powered intrusion detection dashboard built with:
