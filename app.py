@@ -156,7 +156,7 @@ if st.session_state.get("sample_loaded"):
     st.bar_chart(shap_df.set_index("Feature"))
 
     st.markdown("---")
-    st.subheader("📄 Full Predictions (Top 25)") (Top 25)")
+    st.subheader("📄 Full Predictions -Top 25") 
     st.dataframe(data.head(25))
 
     st.download_button(
