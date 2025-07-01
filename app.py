@@ -14,7 +14,7 @@ st.set_page_config(page_title="AI IDS", layout="centered")
 if "theme" not in st.session_state:
     st.session_state.theme = "Light"
 
-chosen_theme = st.sidebar.radio("🎨 Choose Theme", ["Light", "Dark"], index=0 if st.session_state.theme == "Light" else 1)
+chosen_theme = st.sidebar.radio("Choose Theme", ["Light", "Dark"], index=0 if st.session_state.theme == "Light" else 1)
 st.session_state.theme = chosen_theme
 
 light_style = "background-color: #f5f5f5; color: black;"
@@ -24,14 +24,14 @@ style = light_style if st.session_state.theme == "Light" else dark_style
 # Styled Header
 st.markdown(f"""
 <div style='{style} padding: 10px;'>
-<h1 style='text-align: center;'>🔐 AI-Powered Intrusion Detection System</h1>
+<h1 style='text-align: center;'>AI-Powered Intrusion Detection System🔐 </h1>
 <h4 style='text-align: center;'>Detect cyber attacks in real-time using Machine Learning</h4>
 <p style='text-align: center; font-size: 14px;'>Built by <b>Prasamita B.</b> | Mahindra University</p></div>
 <hr style='border-top: 2px solid #bbb;'>
 """, unsafe_allow_html=True)
 
 # Model selector
-model_choice = st.sidebar.selectbox("🧠 Choose a Model", ["Random Forest", "Logistic Regression"])
+model_choice = st.sidebar.selectbox(" Choose a Model", ["Random Forest", "Logistic Regression"])
 
 @st.cache_resource
 def load_resources(choice):
@@ -44,25 +44,24 @@ model, feature_list = load_resources(model_choice)
 
 # Sidebar
 with st.sidebar:
-    st.title("📘 About the App")
+    st.title("About the App")
     st.markdown("""
-    ## 🧭 Navigation
+    ##  Navigation
     - 1️⃣ [Data Preview](#1️⃣-🔍-data-preview)
     - 2️⃣ [Summary Metrics](#2️⃣-📊-summary-metrics)
     - 3️⃣ [Prediction Breakdown](#3️⃣-📊-prediction-breakdown)
     - 4️⃣ [Accuracy & Confusion Matrix](#4️⃣-🧪-model-accuracy--confusion-matrix)
     - 5️⃣ [Top Features](#5️⃣-📌-top-10-feature-importances)
-    - 6️⃣ [SHAP Explanation](#6️⃣-🔍-shap-explanation-row-0)
-    - 7️⃣ [Streaming Simulation](#7️⃣-📺-live-streaming-simulation)
+        - 7️⃣ [Streaming Simulation](#7️⃣-📺-live-streaming-simulation)
     - 8️⃣ [Attack Map](#8️⃣-🗺️-simulated-attack-map)
     - 9️⃣ [Full Predictions](#9️⃣-📄-full-predictions-top-25)
     """, unsafe_allow_html=True)
     st.markdown("""
     This is a lightweight, AI-powered intrusion detection dashboard built with:
 
-    - ✅ Random Forest classifier  
-    - 📚 NSL-KDD dataset  
-    - 📊 Real-time visualization  
+    - Random Forest classifier  
+    - NSL-KDD dataset  
+    - Real-time visualization  
 
     Try uploading a CSV or use sample data to test the IDS engine.
     """)
@@ -72,7 +71,7 @@ with st.sidebar:
     feedback_name = st.text_input("Your Name")
     feedback_text = st.text_area("Your Feedback")
     if st.button("Submit Feedback"):
-        st.success("✅ Thank you for your feedback!")
+        st.success("Thank you for your feedback!")
         with open("feedback_log.txt", "a") as f:
             f.write(f"{datetime.now()} - {feedback_name}: {feedback_text}\n")
 
@@ -151,23 +150,12 @@ if st.session_state.get("sample_loaded") and data is not None:
     st.pyplot(fig_cm)
 
     st.markdown("---")
-    st.subheader("5️⃣ 📌 Top 10 Feature Importances")
+    st.subheader("5️⃣ Top 10 Feature Importances")
     importances = model.feature_importances_
     feat_series = pd.Series(importances, index=feature_list).sort_values(ascending=False).head(10)
     st.bar_chart(feat_series)
 
-    st.subheader("6️⃣ 🔍 SHAP Explanation (Row 0)")
-    try:
-        shap_explainer = joblib.load("shap_explainer.pkl")
-        selected_row = data.iloc[[0]][feature_list]
-        shap_values = shap_explainer(selected_row)
-        shap_df = pd.DataFrame({
-            "Feature": feature_list,
-            "SHAP Value": shap_values.values[0]
-        }).sort_values("SHAP Value", key=abs, ascending=False).head(10)
-        st.bar_chart(shap_df.set_index("Feature"))
-    except Exception as e:
-        st.error("SHAP explanation could not be loaded. Ensure shap_explainer.pkl is valid.")
+    
 
     st.markdown("---")
     st.subheader("7️⃣ 📺 Live Streaming Simulation")
@@ -183,7 +171,7 @@ if st.session_state.get("sample_loaded") and data is not None:
             time.sleep(0.6)
 
     st.markdown("---")
-    st.subheader("8️⃣ 🗺️ Simulated Attack Map")
+    st.subheader("8️⃣  Simulated Attack Map")
     try:
         attack_data = data[data['Prediction'] == 'Attack'].copy()
         if not attack_data.empty:
@@ -221,10 +209,10 @@ if st.session_state.get("sample_loaded") and data is not None:
     )
 
     st.markdown("---")
-    with st.expander("🧠 How This Works"):
+    with st.expander(" How This Works ! "):
         st.caption("🟢 = Normal Traffic  🔴 = Attack Traffic")
-        st.caption("📶 Confidence = Model's certainty in its prediction")
-        st.caption("📊 Streaming Simulation = Real-time row-by-row intrusion demo")
+        st.caption("Confidence = Model's certainty in its prediction")
+        st.caption("Streaming Simulation = Real-time row-by-row intrusion demo")
         st.markdown("""
         - Trained on the **NSL-KDD dataset**  
         - Features are one-hot encoded and standardized  
@@ -235,7 +223,7 @@ if st.session_state.get("sample_loaded") and data is not None:
 
     st.markdown("""
     ---
-    <p style='text-align: center;'>🔒 Powered by Machine Learning | Streamlit App by <b>Prasamita B.</b></p>
+    <p style='text-align: center;'>🔒 Powered by Machine Learning | Streamlit App by <b>Prasamita Bangal.</b></p>
     """, unsafe_allow_html=True)
 else:
     st.info("👆 Please upload your `preprocessed_test_data.csv` file or click 'Try with Sample Data' to see predictions.")
