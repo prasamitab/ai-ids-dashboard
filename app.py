@@ -118,8 +118,8 @@ st.markdown("</div>", unsafe_allow_html=True)
 st.markdown("---")
 st.markdown(f"<div style='{style} padding:10px'>", unsafe_allow_html=True)
 st.subheader("🗺️ Simulated Attack Map")
-    attack_data = data[data['Prediction'] == 'Attack'].copy()
-    if not attack_data.empty:
+attack_data = data[data['Prediction'] == 'Attack'].copy()
+if not attack_data.empty:
         attack_data['lat'] = np.random.uniform(8, 37, len(attack_data))
         attack_data['lon'] = np.random.uniform(68, 97, len(attack_data))
         st.pydeck_chart(pdk.Deck(
