@@ -5,6 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pydeck as pdk
 from datetime import datetime
+from sklearn.metrics import confusion_matrix, accuracy_score
+import seaborn as sns
 
 st.set_page_config(page_title="AI IDS", layout="centered")
 
@@ -124,9 +126,6 @@ if st.session_state.get("sample_loaded"):
 
     st.markdown("---")
     st.subheader("🧪 Model Accuracy & Confusion Matrix")
-    from sklearn.metrics import confusion_matrix, accuracy_score
-    import seaborn as sns
-
     true_labels = [1 if lbl == "Normal" else 0 for lbl in labels]
     cm = confusion_matrix(true_labels, predictions)
     acc = accuracy_score(true_labels, predictions)
@@ -144,7 +143,7 @@ if st.session_state.get("sample_loaded"):
     feat_series = pd.Series(importances, index=feature_list).sort_values(ascending=False).head(10)
     st.bar_chart(feat_series)
 
-        st.subheader("🔍 SHAP Explanation (Row 0)")
+    st.subheader("🔍 SHAP Explanation (Row 0)")
     try:
         shap_explainer = joblib.load("shap_explainer.pkl")
         selected_row = data.iloc[[0]][feature_list]
@@ -156,8 +155,6 @@ if st.session_state.get("sample_loaded"):
         st.bar_chart(shap_df.set_index("Feature"))
     except Exception as e:
         st.error("SHAP explanation could not be loaded. Ensure shap_explainer.pkl is valid.")
-        except Exception as e:
-            st.error("SHAP explanation could not be loaded. Ensure shap_explainer.pkl is valid.")
 
     st.markdown("---")
     st.subheader("📺 Live Streaming Simulation")
@@ -198,7 +195,6 @@ if st.session_state.get("sample_loaded"):
         st.error("Could not generate attack map. Error: " + str(e))
 
     st.subheader("📄 Full Predictions (Top 25)")
-    # Add threat level emoji column
     threat_emojis = ["🛡️" if lbl == "Normal" else "😈" for lbl in data["Prediction"]]
     display_data = data.copy()
     display_data.insert(0, "🔒 Threat", threat_emojis)
@@ -214,9 +210,9 @@ if st.session_state.get("sample_loaded"):
     st.markdown("---")
     with st.expander("🧠 How This Works"):
         st.caption("🟢 = Normal Traffic  🔴 = Attack Traffic")
-    st.caption("📶 Confidence = Model's certainty in its prediction")
-    st.caption("📊 Streaming Simulation = Real-time row-by-row intrusion demo")
-    st.markdown("""
+        st.caption("📶 Confidence = Model's certainty in its prediction")
+        st.caption("📊 Streaming Simulation = Real-time row-by-row intrusion demo")
+        st.markdown("""
         - Trained on the **NSL-KDD dataset**  
         - Features are one-hot encoded and standardized  
         - Model: Random Forest Classifier or Logistic Regression  
@@ -228,6 +224,5 @@ if st.session_state.get("sample_loaded"):
     ---
     <p style='text-align: center;'>🔒 Powered by Machine Learning | Streamlit App by <b>Prasamita B.</b></p>
     """, unsafe_allow_html=True)
-
 else:
     st.info("👆 Please upload your `preprocessed_test_data.csv` file or click 'Try with Sample Data' to see predictions.")
