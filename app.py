@@ -249,7 +249,9 @@ if st.session_state.get("sample_loaded") and data is not None:
         Spacer(1, 24),
         Paragraph("This report summarizes the intrusion detection results for the uploaded network traffic logs using AI-based classifiers.", styles['Normal']),
         Spacer(1, 36)
+        
         ]
+        
         doc.build(elements)
         st.download_button(
             label="📄 Download PDF Report",
