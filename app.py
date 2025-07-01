@@ -195,6 +195,36 @@ if st.session_state.get("sample_loaded"):
         mime="text/csv"
     )
 
+    import io
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet
+
+    st.subheader("📄 Export PDF Summary Report")
+    if st.button("📤 Generate PDF Report"):
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer)
+        styles = getSampleStyleSheet()
+        elements = [
+            Paragraph("AI-Powered Intrusion Detection Report", styles['Title']),
+            Spacer(1, 12),
+            Paragraph(f"Total Records: {len(data)}", styles['Normal']),
+            Paragraph(f"Attacks Detected: {total_attacks}", styles['Normal']),
+            Paragraph(f"Normal Traffic: {total_normal}", styles['Normal']),
+            Paragraph(f"Attack %: {(total_attacks/len(data))*100:.2f}%", styles['Normal']),
+            Spacer(1, 12),
+            Paragraph("Model Used: " + model_choice, styles['Normal']),
+        ]
+        doc.build(elements)
+        st.download_button(
+            label="📄 Download PDF Report",
+            data=buffer.getvalue(),
+            file_name="IDS_Report.pdf",
+            mime="application/pdf"
+        ).encode("utf-8"),
+        file_name="IDS_predictions.csv",
+        mime="text/csv"
+    )
+
     st.markdown("<div style='text-align: center;'>🔒 Powered by Machine Learning | Streamlit App by <b>Prasamita B.</b></div>", unsafe_allow_html=True)
 else:
     st.info("👆 Please upload your `preprocessed_test_data.csv` file or click 'Try with Sample Data' to see predictions.")
