@@ -1,7 +1,8 @@
 streamlit
-joblib
-scikit-learn
 pandas
-matplotlib
 numpy
-
+scikit-learn
+joblib
+matplotlib
+pydeck
+reportlab
