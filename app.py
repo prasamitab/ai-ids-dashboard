@@ -96,6 +96,7 @@ if st.session_state.get("sample_loaded"):
     st.metric("Normal Traffic", total_normal)
     st.metric("Attack %", f"{(total_attacks / len(data)) * 100:.2f}%")
 
+    # Additional summary as a visible table
     summary_df = pd.DataFrame({
         "Category": ["Total Records", "Attacks Detected", "Normal Traffic", "Attack %"],
         "Value": [len(data), total_attacks, total_normal, f"{(total_attacks / len(data)) * 100:.2f}%"]
@@ -122,10 +123,42 @@ if st.session_state.get("sample_loaded"):
     st.caption("🟢 Green = Normal   🔴 Red = Attack")
 
     st.markdown("---")
-    st.subheader("📌 Top 10 Feature Importances")
+    st.subheader("🧪 Model Accuracy & Confusion Matrix")
+    from sklearn.metrics import confusion_matrix, accuracy_score
+    import seaborn as sns
+
+    true_labels = [1 if lbl == "Normal" else 0 for lbl in labels]
+    cm = confusion_matrix(true_labels, predictions)
+    acc = accuracy_score(true_labels, predictions)
+
+    st.write(f"**Accuracy Score:** {acc*100:.2f}% ✅")
+    fig_cm, ax_cm = plt.subplots()
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=["Attack", "Normal"], yticklabels=["Attack", "Normal"], ax=ax_cm)
+    ax_cm.set_xlabel("Predicted")
+    ax_cm.set_ylabel("Actual")
+    st.pyplot(fig_cm)
+
+    st.markdown("---")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("📌 Top 10 Feature Importances")
     importances = model.feature_importances_
     feat_series = pd.Series(importances, index=feature_list).sort_values(ascending=False).head(10)
-    st.bar_chart(feat_series)
+            st.bar_chart(feat_series)
+
+        with col2:
+        st.subheader("🔍 SHAP Explanation (Row 0)")
+        try:
+            shap_explainer = joblib.load("shap_explainer.pkl")
+            selected_row = data.iloc[[0]][feature_list]
+            shap_values = shap_explainer(selected_row)
+            shap_df = pd.DataFrame({
+                "Feature": feature_list,
+                "SHAP Value": shap_values.values[0]
+            }).sort_values("SHAP Value", key=abs, ascending=False).head(10)
+            st.bar_chart(shap_df.set_index("Feature"))
+        except Exception as e:
+            st.error("SHAP explanation could not be loaded. Ensure shap_explainer.pkl is valid.")
 
     st.markdown("---")
     st.subheader("📺 Live Streaming Simulation")
@@ -166,6 +199,7 @@ if st.session_state.get("sample_loaded"):
         st.error("Could not generate attack map. Error: " + str(e))
 
     st.subheader("📄 Full Predictions (Top 25)")
+    # Add threat level emoji column
     threat_emojis = ["🛡️" if lbl == "Normal" else "😈" for lbl in data["Prediction"]]
     display_data = data.copy()
     display_data.insert(0, "🔒 Threat", threat_emojis)
@@ -180,10 +214,10 @@ if st.session_state.get("sample_loaded"):
 
     st.markdown("---")
     with st.expander("🧠 How This Works"):
-        st.caption("🟢 = Normal Traffic  🔴 = Attack Traffic")
-        st.caption("📶 Confidence = Model's certainty in its prediction")
-        st.caption("📊 Streaming Simulation = Real-time row-by-row intrusion demo")
-        st.markdown("""
+    st.caption("🟢 = Normal Traffic  🔴 = Attack Traffic")
+    st.caption("📶 Confidence = Model's certainty in its prediction")
+    st.caption("📊 Streaming Simulation = Real-time row-by-row intrusion demo")
+    st.markdown("""
         - Trained on the **NSL-KDD dataset**  
         - Features are one-hot encoded and standardized  
         - Model: Random Forest Classifier or Logistic Regression  
