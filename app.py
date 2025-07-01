@@ -48,10 +48,10 @@ with st.sidebar:
     st.markdown("""
     ##  Navigation
     - 1] [Data Preview](#1️⃣-🔍-data-preview)
-    - 2️] [Summary Metrics](#2️⃣-📊-summary-metrics)
-    - 3️] [Prediction Breakdown](#3️⃣-📊-prediction-breakdown)
-    - 4️] [Accuracy & Confusion Matrix](#4️⃣-🧪-model-accuracy--confusion-matrix)
-    - 5️] [Top Features](#5️⃣-📌-top-10-feature-importances)
+    - 2] [Summary Metrics](#2️⃣-📊-summary-metrics)
+    - 3] [Prediction Breakdown](#3️⃣-📊-prediction-breakdown)
+    - 4] [Accuracy & Confusion Matrix](#4️⃣-🧪-model-accuracy--confusion-matrix)
+    - 5] [Top Features](#5️⃣-📌-top-10-feature-importances)
     - 6] [Streaming Simulation](#7️⃣-📺-live-streaming-simulation)
     - 7] [Attack Map](#8️⃣-🗺️-simulated-attack-map)
     - 8] [Full Predictions](#9️⃣-📄-full-predictions-top-25)
@@ -89,7 +89,7 @@ else:
 # Run predictions
 if st.session_state.get("sample_loaded") and data is not None:
     data = data.reindex(columns=feature_list, fill_value=0)
-    st.subheader("1️ 🔍 Data Preview")
+    st.subheader("1️. 🔍 Data Preview")
     st.dataframe(data.head())
 
     predictions = model.predict(data)
@@ -104,7 +104,7 @@ if st.session_state.get("sample_loaded") and data is not None:
     total_normal = data["Prediction"].value_counts().get("Normal", 0)
 
     st.markdown("---")
-    st.subheader("2️ 📊 Summary Metrics")
+    st.subheader("2️. 📊 Summary Metrics")
     st.metric("Total Records", len(data))
     st.metric("Attacks Detected", total_attacks)
     st.metric("Normal Traffic", total_normal)
@@ -118,7 +118,7 @@ if st.session_state.get("sample_loaded") and data is not None:
     st.dataframe(summary_df)
 
     st.markdown("---")
-    st.subheader("3️ 📊 Prediction Breakdown")
+    st.subheader("3️. 📊 Prediction Breakdown")
     pred_counts = data["Prediction"].value_counts()
     colors = ["#2ecc71" if label == "Normal" else "#e74c3c" for label in pred_counts.index]
     fig, ax = plt.subplots()
@@ -137,7 +137,7 @@ if st.session_state.get("sample_loaded") and data is not None:
     st.caption("🟢 Green = Normal   🔴 Red = Attack")
 
     st.markdown("---")
-    st.subheader("4️ 🧪 Model Accuracy & Confusion Matrix")
+    st.subheader("4️. 🧪 Model Accuracy & Confusion Matrix")
     true_labels = [1 if lbl == "Normal" else 0 for lbl in labels]
     cm = confusion_matrix(true_labels, predictions)
     acc = accuracy_score(true_labels, predictions)
@@ -150,7 +150,7 @@ if st.session_state.get("sample_loaded") and data is not None:
     st.pyplot(fig_cm)
 
     st.markdown("---")
-    st.subheader("5️ Top 10 Feature Importances")
+    st.subheader("5️. Top 10 Feature Importances")
     importances = model.feature_importances_
     feat_series = pd.Series(importances, index=feature_list).sort_values(ascending=False).head(10)
     st.bar_chart(feat_series)
@@ -158,7 +158,7 @@ if st.session_state.get("sample_loaded") and data is not None:
     
 
     st.markdown("---")
-    st.subheader("6  📺 Live Streaming Simulation")
+    st.subheader("6.  📺 Live Streaming Simulation")
     if st.button("▶️ Start Stream Simulation"):
         import time
         live_placeholder = st.empty()
@@ -171,7 +171,7 @@ if st.session_state.get("sample_loaded") and data is not None:
             time.sleep(0.6)
 
     st.markdown("---")
-    st.subheader("7   Simulated Attack Map")
+    st.subheader("7.   Simulated Attack Map")
     try:
         attack_data = data[data['Prediction'] == 'Attack'].copy()
         if not attack_data.empty:
@@ -195,7 +195,7 @@ if st.session_state.get("sample_loaded") and data is not None:
     except Exception as e:
         st.error("Could not generate attack map. Error: " + str(e))
 
-    st.subheader("8  📄 Full Predictions (Top 25)")
+    st.subheader("8. 📄 Full Predictions (Top 25)")
     threat_emojis = ["🛡️" if lbl == "Normal" else "😈" for lbl in data["Prediction"]]
     display_data = data.copy()
     display_data.insert(0, "🔒 Threat", threat_emojis)
