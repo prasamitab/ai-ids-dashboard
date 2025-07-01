@@ -3,26 +3,42 @@ import pandas as pd
 import joblib
 import numpy as np
 import matplotlib.pyplot as plt
+import pydeck as pdk
 from datetime import datetime
 
 st.set_page_config(page_title="AI IDS", layout="centered")
 
+# Theme toggle
+if "theme" not in st.session_state:
+    st.session_state.theme = "Light"
+
+chosen_theme = st.sidebar.radio("🎨 Choose Theme", ["Light", "Dark"], index=0 if st.session_state.theme == "Light" else 1)
+st.session_state.theme = chosen_theme
+
+light_style = "background-color: #f5f5f5; color: black;"
+dark_style = "background-color: #1e1e1e; color: white;"
+style = light_style if st.session_state.theme == "Light" else dark_style
+
 # Styled Header
-st.markdown("""
-<h1 style='text-align: center; color: #FF4B4B;'>🔐 AI-Powered Intrusion Detection System</h1>
+st.markdown(f"""
+<div style='{style} padding: 10px;'>
+<h1 style='text-align: center;'>🔐 AI-Powered Intrusion Detection System</h1>
 <h4 style='text-align: center;'>Detect cyber attacks in real-time using Machine Learning</h4>
-<p style='text-align: center; font-size: 14px;'>Built by <b>Prasamita B.</b> | Mahindra University</p>
+<p style='text-align: center; font-size: 14px;'>Built by <b>Prasamita B.</b> | Mahindra University</p></div>
 <hr style='border-top: 2px solid #bbb;'>
 """, unsafe_allow_html=True)
 
-# Load model and feature list
+# Model selector
+model_choice = st.sidebar.selectbox("🧠 Choose a Model", ["Random Forest", "Logistic Regression"])
+
 @st.cache_resource
-def load_resources():
-    model = joblib.load("ids_model.pkl")
+def load_resources(choice):
+    model_file = "ids_model.pkl" if choice == "Random Forest" else "logistic_model.pkl"
+    model = joblib.load(model_file)
     feature_list = joblib.load("model_features.pkl")
     return model, feature_list
 
-model, feature_list = load_resources()
+model, feature_list = load_resources(model_choice)
 
 # Sidebar
 with st.sidebar:
@@ -103,6 +119,31 @@ if st.session_state.get("sample_loaded"):
             live_placeholder.markdown(f"**Row {i+1}:** `{label}` (Confidence: {conf})")
             time.sleep(0.6)
 
+    st.markdown("---")
+    st.subheader("🗺️ Simulated Attack Map")
+    try:
+        attack_data = data[data['Prediction'] == 'Attack'].copy()
+        if not attack_data.empty:
+            attack_data['lat'] = np.random.uniform(8.0, 37.0, len(attack_data))
+            attack_data['lon'] = np.random.uniform(68.0, 97.0, len(attack_data))
+            st.pydeck_chart(pdk.Deck(
+                map_style='mapbox://styles/mapbox/dark-v9' if st.session_state.theme == 'Dark' else 'mapbox://styles/mapbox/light-v9',
+                initial_view_state=pdk.ViewState(latitude=22.0, longitude=78.0, zoom=3.5, pitch=0),
+                layers=[
+                    pdk.Layer(
+                        'ScatterplotLayer',
+                        data=attack_data,
+                        get_position='[lon, lat]',
+                        get_color='[255, 0, 0, 160]',
+                        get_radius=40000,
+                    )
+                ]
+            ))
+        else:
+            st.info("✅ No attacks detected to map.")
+    except Exception as e:
+        st.error("Could not generate attack map. Error: " + str(e))
+
     st.subheader("📄 Full Predictions (Top 25)")
     st.dataframe(data.head(25))
 
@@ -118,7 +159,7 @@ if st.session_state.get("sample_loaded"):
         st.markdown("""
         - Trained on the **NSL-KDD dataset**  
         - Features are one-hot encoded and standardized  
-        - Model: Random Forest Classifier  
+        - Model: Random Forest Classifier or Logistic Regression  
         - Predicts if traffic is **Attack** or **Normal**  
         - Includes confidence score and live streaming preview
         """)
