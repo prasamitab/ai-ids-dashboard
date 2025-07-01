@@ -182,11 +182,10 @@ if st.session_state.get("sample_loaded"):
 
     st.markdown("---")
     with st.expander("🧠 How This Works"):
-    
     st.caption("🟢 = Normal Traffic  🔴 = Attack Traffic")
     st.caption("📶 Confidence = Model's certainty in its prediction")
     st.caption("📊 Streaming Simulation = Real-time row-by-row intrusion demo")
-        st.markdown("""
+    st.markdown("""
         - Trained on the **NSL-KDD dataset**  
         - Features are one-hot encoded and standardized  
         - Model: Random Forest Classifier or Logistic Regression  
