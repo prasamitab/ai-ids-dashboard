@@ -105,7 +105,22 @@ if st.session_state.get("sample_loaded"):
 
     st.markdown("---")
     st.subheader("📊 Prediction Breakdown")
-    st.bar_chart(data["Prediction"].value_counts())
+    pred_counts = data["Prediction"].value_counts()
+    colors = ["#2ecc71" if label == "Normal" else "#e74c3c" for label in pred_counts.index]
+    fig, ax = plt.subplots()
+    bars = ax.bar(pred_counts.index, pred_counts.values, color=colors)
+    ax.set_xlabel("Prediction")
+    ax.set_ylabel("Count")
+    ax.set_title("Attack vs Normal")
+    ax.grid(True, linestyle='--', alpha=0.5)
+    ax.set_facecolor('#f8f9fa')
+    for bar in bars:
+        height = bar.get_height()
+        ax.annotate(f'{int(height)}', xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3), textcoords="offset points",
+                    ha='center', va='bottom', fontsize=10)
+    st.pyplot(fig)
+    st.caption("🟢 Green = Normal   🔴 Red = Attack")
 
     st.markdown("---")
     st.subheader("📌 Top 10 Feature Importances")
@@ -152,7 +167,11 @@ if st.session_state.get("sample_loaded"):
         st.error("Could not generate attack map. Error: " + str(e))
 
     st.subheader("📄 Full Predictions (Top 25)")
-    st.dataframe(data.head(25))
+    # Add threat level emoji column
+    threat_emojis = ["🛡️" if lbl == "Normal" else "😈" for lbl in data["Prediction"]]
+    display_data = data.copy()
+    display_data.insert(0, "🔒 Threat", threat_emojis)
+    st.dataframe(display_data.head(25))
 
     st.download_button(
         label="📥 Download Predictions CSV",
@@ -163,6 +182,9 @@ if st.session_state.get("sample_loaded"):
 
     st.markdown("---")
     with st.expander("🧠 How This Works"):
+    st.caption("🟢 = Normal Traffic  🔴 = Attack Traffic")
+    st.caption("📶 Confidence = Model's certainty in its prediction")
+    st.caption("📊 Streaming Simulation = Real-time row-by-row intrusion demo")
         st.markdown("""
         - Trained on the **NSL-KDD dataset**  
         - Features are one-hot encoded and standardized  
