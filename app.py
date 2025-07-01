@@ -220,9 +220,7 @@ if st.session_state.get("sample_loaded"):
             data=buffer.getvalue(),
             file_name="IDS_Report.pdf",
             mime="application/pdf"
-        ).encode("utf-8"),
-        file_name="IDS_predictions.csv",
-        mime="text/csv"
+        )
     )
 
     st.markdown("<div style='text-align: center;'>🔒 Powered by Machine Learning | Streamlit App by <b>Prasamita B.</b></div>", unsafe_allow_html=True)
