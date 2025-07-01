@@ -96,6 +96,13 @@ if st.session_state.get("sample_loaded"):
     st.metric("Normal Traffic", total_normal)
     st.metric("Attack %", f"{(total_attacks / len(data)) * 100:.2f}%")
 
+    # Additional summary as a visible table
+    summary_df = pd.DataFrame({
+        "Category": ["Total Records", "Attacks Detected", "Normal Traffic", "Attack %"],
+        "Value": [len(data), total_attacks, total_normal, f"{(total_attacks / len(data)) * 100:.2f}%"]
+    })
+    st.dataframe(summary_df)
+
     st.markdown("---")
     st.subheader("📊 Prediction Breakdown")
     st.bar_chart(data["Prediction"].value_counts())
