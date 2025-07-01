@@ -182,6 +182,7 @@ if st.session_state.get("sample_loaded"):
 
     st.markdown("---")
     with st.expander("🧠 How This Works"):
+    
     st.caption("🟢 = Normal Traffic  🔴 = Attack Traffic")
     st.caption("📶 Confidence = Model's certainty in its prediction")
     st.caption("📊 Streaming Simulation = Real-time row-by-row intrusion demo")
