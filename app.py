@@ -8,11 +8,23 @@ from datetime import datetime
 
 st.set_page_config(page_title="AI IDS", layout="centered")
 
+# Theme toggle
+if "theme" not in st.session_state:
+    st.session_state.theme = "Light"
+
+chosen_theme = st.sidebar.radio("🎨 Choose Theme", ["Light", "Dark"], index=0 if st.session_state.theme == "Light" else 1)
+st.session_state.theme = chosen_theme
+
+light_style = "background-color: #f5f5f5; color: black;"
+dark_style = "background-color: #1e1e1e; color: white;"
+style = light_style if st.session_state.theme == "Light" else dark_style
+
 # Styled Header
-st.markdown("""
-<h1 style='text-align: center; color: #FF4B4B;'>🔐 AI-Powered Intrusion Detection System</h1>
+st.markdown(f"""
+<div style='{style} padding: 10px;'>
+<h1 style='text-align: center;'>🔐 AI-Powered Intrusion Detection System</h1>🔐 AI-Powered Intrusion Detection System</h1>
 <h4 style='text-align: center;'>Detect cyber attacks in real-time using Machine Learning</h4>
-<p style='text-align: center; font-size: 14px;'>Built by <b>Prasamita B.</b> | Mahindra University</p>
+<p style='text-align: center; font-size: 14px;'>Built by <b>Prasamita B.</b> | Mahindra University</p></div>
 <hr style='border-top: 2px solid #bbb;'>
 """, unsafe_allow_html=True)
 
@@ -78,7 +90,8 @@ else:
 
 if st.session_state.get("sample_loaded"):
     data = data.reindex(columns=feature_list, fill_value=0)
-    st.subheader("🔍 Data Preview")
+    st.markdown(f"<div style='{style} padding:10px'>", unsafe_allow_html=True)
+st.subheader("🔍 Data Preview")
     st.dataframe(data.head())
 
     predictions = model.predict(data)
@@ -92,15 +105,19 @@ if st.session_state.get("sample_loaded"):
     total_attacks = data['Prediction'].value_counts().get('Attack', 0)
     total_normal = data['Prediction'].value_counts().get('Normal', 0)
 
-    st.markdown("---")
-    st.subheader("📊 Summary Metrics")
+    st.markdown("</div>", unsafe_allow_html=True)
+st.markdown("---")
+st.markdown(f"<div style='{style} padding:10px'>", unsafe_allow_html=True)
+st.subheader("📊 Summary Metrics")
     st.metric("Total Records", len(data))
     st.metric("Attacks Detected", total_attacks)
     st.metric("Normal Traffic", total_normal)
     st.metric("Attack %", f"{(total_attacks/len(data))*100:.2f}%")
 
-    st.markdown("---")
-    st.subheader("🗺️ Simulated Attack Map")
+    st.markdown("</div>", unsafe_allow_html=True)
+st.markdown("---")
+st.markdown(f"<div style='{style} padding:10px'>", unsafe_allow_html=True)
+st.subheader("🗺️ Simulated Attack Map")
     attack_data = data[data['Prediction'] == 'Attack'].copy()
     if not attack_data.empty:
         attack_data['lat'] = np.random.uniform(8, 37, len(attack_data))
@@ -117,18 +134,32 @@ if st.session_state.get("sample_loaded"):
     else:
         st.info("✅ No attacks detected, map not shown.")
 
-    st.markdown("---")
-    st.subheader("📊 Prediction Breakdown")
-    st.bar_chart(data['Prediction'].value_counts())
+    st.markdown("</div>", unsafe_allow_html=True)
+st.markdown("---")
+st.markdown(f"<div style='{style} padding:10px'>", unsafe_allow_html=True)
+st.subheader("📊 Prediction Breakdown")
+    fig, ax = plt.subplots()
+    ax.bar(data['Prediction'].value_counts(.index, data['Prediction'].value_counts(.values, color='white' if st.session_state.theme == 'Dark' else '#FF4B4B')
+    ax.set_facecolor('#1e1e1e' if st.session_state.theme == 'Dark' else 'white')
+    ax.tick_params(colors='white' if st.session_state.theme == 'Dark' else 'black')
+    st.pyplot(fig))
 
-    st.markdown("---")
-    st.subheader("📌 Top 10 Feature Importances")
+    st.markdown("</div>", unsafe_allow_html=True)
+st.markdown("---")
+st.markdown(f"<div style='{style} padding:10px'>", unsafe_allow_html=True)
+st.subheader("📌 Top 10 Feature Importances")
     importances = model.feature_importances_
     feat_series = pd.Series(importances, index=feature_list).sort_values(ascending=False).head(10)
-    st.bar_chart(feat_series)
+    fig, ax = plt.subplots()
+    ax.bar(feat_series.index, feat_series.values, color='white' if st.session_state.theme == 'Dark' else '#FF4B4B')
+    ax.set_facecolor('#1e1e1e' if st.session_state.theme == 'Dark' else 'white')
+    ax.tick_params(colors='white' if st.session_state.theme == 'Dark' else 'black')
+    st.pyplot(fig)
 
-    st.markdown("---")
-    st.subheader("📺 Live Streaming Simulation")
+    st.markdown("</div>", unsafe_allow_html=True)
+st.markdown("---")
+st.markdown(f"<div style='{style} padding:10px'>", unsafe_allow_html=True)
+st.subheader("📺 Live Streaming Simulation")
     if st.button("▶️ Start Stream Simulation"):
         import time
         live_placeholder = st.empty()
@@ -142,8 +173,10 @@ if st.session_state.get("sample_loaded"):
 
     
 
-    st.markdown("---")
-    st.subheader("🔍 Explain a Prediction with SHAP")
+    st.markdown("</div>", unsafe_allow_html=True)
+st.markdown("---")
+st.markdown(f"<div style='{style} padding:10px'>", unsafe_allow_html=True)
+st.subheader("🔍 Explain a Prediction with SHAP")
     shap_explainer = joblib.load("shap_explainer.pkl")
     row_index = st.number_input("Choose a row index to explain (0–49 recommended):", min_value=0, max_value=min(len(data)-1, 49), value=0)
     selected_row = data.iloc[[row_index]][feature_list]
@@ -153,10 +186,16 @@ if st.session_state.get("sample_loaded"):
         "Feature": feature_list,
         "SHAP Value": shap_values.values[0]
     }).sort_values("SHAP Value", key=abs, ascending=False).head(10)
-    st.bar_chart(shap_df.set_index("Feature"))
+    fig, ax = plt.subplots()
+    ax.bar(shap_df.set_index("Feature".index, shap_df.set_index("Feature".values, color='white' if st.session_state.theme == 'Dark' else '#FF4B4B')
+    ax.set_facecolor('#1e1e1e' if st.session_state.theme == 'Dark' else 'white')
+    ax.tick_params(colors='white' if st.session_state.theme == 'Dark' else 'black')
+    st.pyplot(fig))
 
-    st.markdown("---")
-    st.subheader("📄 Full Predictions (Top 25)") (Top 25)")
+    st.markdown("</div>", unsafe_allow_html=True)
+st.markdown("---")
+st.markdown(f"<div style='{style} padding:10px'>", unsafe_allow_html=True)
+st.subheader("📄 Full Predictions (Top 25)") (Top 25)")
     st.dataframe(data.head(25))
 
     st.download_button(
@@ -166,8 +205,10 @@ if st.session_state.get("sample_loaded"):
         mime="text/csv"
     )
 
-    st.markdown("---")
-    st.subheader("🧾 Generate PDF Report (Coming Soon)")
+    st.markdown("</div>", unsafe_allow_html=True)
+st.markdown("---")
+st.markdown(f"<div style='{style} padding:10px'>", unsafe_allow_html=True)
+st.subheader("🧾 Generate PDF Report (Coming Soon)")
     st.info("This feature will allow you to export a PDF summary of your analysis. Stay tuned!")
 
     st.markdown("---")
