@@ -28,19 +28,19 @@ st.markdown(f"""
 <hr style='border-top: 2px solid #bbb;'>
 """, unsafe_allow_html=True)
 
-# Load model and feature list
+# Model selector outside cache
 model_choice = st.sidebar.selectbox("🧠 Choose a Model", ["Random Forest", "Logistic Regression"])
 
 @st.cache_resource
 def load_resources(choice):
-        model_file = "ids_model.pkl" if choice == "Random Forest" else "logistic_model.pkl"
+    model_file = "ids_model.pkl" if choice == "Random Forest" else "logistic_model.pkl"
     model = joblib.load(model_file)
     feature_list = joblib.load("model_features.pkl")
     return model, feature_list
 
 model, feature_list = load_resources(model_choice)
 
-# Sidebar
+# Sidebar Info
 with st.sidebar:
     st.title("📘 About the App")
     st.markdown("""
@@ -74,9 +74,11 @@ else:
 # Prediction and visualization
 if st.session_state.get("sample_loaded"):
     data = data.reindex(columns=feature_list, fill_value=0)
+
     st.markdown(f"<div style='{style} padding:10px'>", unsafe_allow_html=True)
     st.subheader("🔍 Data Preview")
     st.dataframe(data.head())
+    st.markdown("</div>", unsafe_allow_html=True)
 
     predictions = model.predict(data)
     prediction_probs = model.predict_proba(data)
@@ -89,7 +91,6 @@ if st.session_state.get("sample_loaded"):
     total_attacks = data["Prediction"].value_counts().get("Attack", 0)
     total_normal = data["Prediction"].value_counts().get("Normal", 0)
 
-    st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("---")
     st.markdown(f"<div style='{style} padding:10px'>", unsafe_allow_html=True)
     st.subheader("📊 Summary Metrics")
@@ -98,9 +99,8 @@ if st.session_state.get("sample_loaded"):
     st.metric("Normal Traffic", total_normal)
     st.metric("Attack %", f"{(total_attacks/len(data))*100:.2f}%")
     st.markdown("</div>", unsafe_allow_html=True)
-    st.markdown("---")
 
-    # Add more visual blocks similarly as needed...
+    st.markdown("---")
     st.markdown("<div style='text-align: center;'>🔒 Powered by Machine Learning | Streamlit App by <b>Prasamita B.</b></div>", unsafe_allow_html=True)
 else:
     st.info("👆 Please upload your `preprocessed_test_data.csv` file or click 'Try with Sample Data' to see predictions.")
