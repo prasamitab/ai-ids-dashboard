@@ -34,7 +34,7 @@ style = light_style if st.session_state.theme == "Light" else dark_style
 st.markdown(f"""
 <div style='{style} padding: 10px; border-radius: 10px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);'>
     <div style='display: flex; justify-content: center; align-items: center; margin-bottom: 10px;'>
-        <img src="https://placehold.co/100x60/000000/FFFFFF?text=LOGO" alt="Logo" style="width: 100px; height: 60px; border-radius: 5px;">
+        <img src="logo.png" alt="Logo" style="width: 100px; height: 60px; border-radius: 5px;">
     </div>
     <h1 style='text-align: center; color: {"black" if st.session_state.theme == "Light" else "white"};'> AI-Powered Intrusion Detection System 🔐</h1>
     <h4 style='text-align: center; color: {"black" if st.session_state.theme == "Light" else "white"};'>Detect cyber attacks in real-time using Machine Learning</h4>
@@ -295,8 +295,8 @@ if st.session_state.get("sample_loaded") and data is not None:
             doc = SimpleDocTemplate(buffer)
             styles = getSampleStyleSheet()
             elements = [
-                # Placeholder for logo. In a real app, ensure 'logo.png' exists or use a web URL
-                Image("https://placehold.co/100x60/000000/FFFFFF?text=LOGO", width=100, height=60),
+                # Using the local 'logo.png' file for the PDF report
+                Image("logo.png", width=100, height=60),
                 Spacer(1, 12),
                 Paragraph("AI-Powered Intrusion Detection Report", styles['Title']),
                 Spacer(1, 24),
@@ -342,3 +342,4 @@ if st.session_state.get("sample_loaded") and data is not None:
     """, unsafe_allow_html=True)
 else:
     st.info("👆 Please upload your `preprocessed_test_data.csv` file or click 'Try with Sample Data' to see predictions. Ensure 'ids_model.pkl', 'logistic_model.pkl', and 'model_features.pkl' are in the same directory.")
+
