@@ -1,3 +1,8 @@
+import google.generativeai as genai
+
+# Configure with your Gemini API key
+genai.configure(api_key="YOUR_GEMINI_API_KEY")
+gemini = genai.GenerativeModel("gemini-pro")  # or "gemini-1" based on your access
 import streamlit as st
 import pandas as pd
 import joblib
