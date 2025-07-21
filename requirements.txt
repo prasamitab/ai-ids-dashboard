@@ -4,8 +4,6 @@ joblib
 numpy
 matplotlib
 pydeck
-datetime 
-sklearn 
 seaborn
-reportlab 
+reportlab
 plotly
