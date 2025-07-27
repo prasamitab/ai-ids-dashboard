@@ -13,7 +13,65 @@ from reportlab.lib.styles import getSampleStyleSheet
 
 st.set_page_config(page_title="AI IDS", layout="centered")
 
-# Theme toggle
+# --- Start of new code for cyber grid background ---
+cyber_grid_css = """
+<style>
+body {
+    background-color: #1a1a2e; /* Dark background for the cyber theme */
+    overflow: hidden; /* Hide scrollbars if grid overflows */
+}
+
+/* Pseudo-element for the animated grid */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Place behind content */
+    background-image:
+        linear-gradient(0deg, transparent 99%, rgba(0, 255, 255, 0.1) 100%), /* Horizontal lines (cyan/teal) */
+        linear-gradient(90deg, transparent 99%, rgba(0, 255, 255, 0.1) 100%); /* Vertical lines */
+    background-size: 50px 50px; /* Adjust grid cell size */
+    opacity: 0.3; /* Subtle grid */
+    animation: grid-movement 60s linear infinite; /* Slow, continuous movement */
+    pointer-events: none; /* Allow interaction with elements behind it */
+}
+
+@keyframes grid-movement {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 50px 50px; /* Moves by one grid cell */
+    }
+}
+
+/* Ensure Streamlit containers also have a dark background if desired, or let them float */
+.stApp {
+    background-color: transparent; /* Let the body background show through */
+}
+
+/* If you want to apply the background specifically to a main content area
+   you might need to target Streamlit's main div or a custom div you wrap your content in.
+   For simplicity, applying to body::before is usually sufficient for full-page effects. */
+
+/* Optional: Adjust main content's background to be slightly opaque to show grid */
+.main .block-container {
+    background-color: rgba(30, 30, 46, 0.85); /* Slightly lighter dark background for content */
+    border-radius: 10px;
+    padding: 20px;
+}
+
+</style>
+"""
+
+st.markdown(cyber_grid_css, unsafe_allow_html=True)
+# --- End of new code for cyber grid background ---
+
+
+# Theme toggle (keep existing logic)
 if "theme" not in st.session_state:
     st.session_state.theme = "Light"
 
@@ -23,9 +81,12 @@ chosen_theme = st.sidebar.radio(
 )
 st.session_state.theme = chosen_theme
 
+# The following light_style/dark_style will still apply to the content *within* the markdown div,
+# but the body background will be handled by the CSS injected above.
 light_style = "background-color: #f5f5f5; color: black;"
-dark_style = "background-color: #1e1e1e; color: white;"
+dark_style = "background-color: #1e1e1e; color: white;" # This will be less visible if you have the new .main .block-container style
 style = light_style if st.session_state.theme == "Light" else dark_style
+
 
 st.image("logo.png", width=100)
 
@@ -37,6 +98,7 @@ st.markdown(f"""
 <hr style='border-top: 2px solid #bbb;'>
 """, unsafe_allow_html=True)
 
+# ... (rest of your app (1).py code) ...
 # Model selector
 model_choice = st.sidebar.selectbox(
     "Choose a Model", ["Random Forest", "Logistic Regression"]
