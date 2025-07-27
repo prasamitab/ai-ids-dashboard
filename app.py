@@ -10,18 +10,22 @@ import seaborn as sns
 import io
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch # Import inch for image sizing
 
 st.set_page_config(page_title="AI IDS", layout="centered")
 
-# --- Start of new code for cyber grid background ---
+# --- Start of new code for cyber grid background and overall styling ---
 cyber_grid_css = """
 <style>
+/* Base body styling for the dark theme */
 body {
-    background-color: #1a1a2e; /* Dark background for the cyber theme */
-    overflow: hidden; /* Hide scrollbars if grid overflows */
+    background-color: #1a1a2e; /* Deep dark blue/purple for the overall background */
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+    font-family: 'Inter', sans-serif; /* A clean, modern font */
+    color: #e0e0e0; /* Default text color */
 }
 
-/* Pseudo-element for the animated grid */
+/* Animated Cyber Grid Background */
 body::before {
     content: '';
     position: fixed;
@@ -31,11 +35,11 @@ body::before {
     height: 100%;
     z-index: -1; /* Place behind content */
     background-image:
-        linear-gradient(0deg, transparent 99%, rgba(0, 255, 255, 0.1) 100%), /* Horizontal lines (cyan/teal) */
-        linear-gradient(90deg, transparent 99%, rgba(0, 255, 255, 0.1) 100%); /* Vertical lines */
-    background-size: 50px 50px; /* Adjust grid cell size */
-    opacity: 0.3; /* Subtle grid */
-    animation: grid-movement 60s linear infinite; /* Slow, continuous movement */
+        linear-gradient(0deg, transparent 99%, rgba(0, 255, 255, 0.08) 100%), /* Subtle horizontal lines (cyan/teal) */
+        linear-gradient(90deg, transparent 99%, rgba(0, 255, 255, 0.08) 100%); /* Subtle vertical lines */
+    background-size: 60px 60px; /* Adjust grid cell size for more subtle effect */
+    opacity: 0.2; /* Very subtle grid */
+    animation: grid-movement 90s linear infinite; /* Slower, continuous movement */
     pointer-events: none; /* Allow interaction with elements behind it */
 }
 
@@ -44,47 +48,193 @@ body::before {
         background-position: 0 0;
     }
     100% {
-        background-position: 50px 50px; /* Moves by one grid cell */
+        background-position: 60px 60px; /* Moves by one grid cell */
     }
 }
 
-/* Ensure Streamlit containers also have a dark background if desired, or let them float */
+/* Streamlit main app container */
 .stApp {
     background-color: transparent; /* Let the body background show through */
 }
 
-/* If you want to apply the background specifically to a main content area
-   you might need to target Streamlit's main div or a custom div you wrap your content in.
-   For simplicity, applying to body::before is usually sufficient for full-page effects. */
-
-/* Optional: Adjust main content's background to be slightly opaque to show grid */
+/* Main content block container */
 .main .block-container {
-    background-color: rgba(30, 30, 46, 0.85); /* Slightly lighter dark background for content */
-    border-radius: 10px;
+    background-color: rgba(30, 30, 46, 0.9); /* Slightly lighter, semi-transparent dark background for content */
+    border-radius: 12px; /* More rounded corners */
+    padding: 30px; /* More padding */
+    box-shadow: 0 4px 15px rgba(0, 255, 255, 0.1); /* Subtle glow effect */
+    margin-top: 20px; /* Space from the top header */
+}
+
+/* Headers */
+h1, h2, h3, h4, h5, h6 {
+    color: #00e0ff; /* Bright cyan for headings */
+    font-family: 'Inter', sans-serif;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.3); /* Subtle text glow */
+}
+
+/* Paragraphs and general text */
+p, li, .stMarkdown {
+    color: #c0c0c0; /* Light gray for body text */
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+}
+
+/* Buttons */
+.stButton>button {
+    background-color: #007bff; /* A standard blue */
+    background-image: linear-gradient(45deg, #007bff, #00c0e0); /* Gradient for buttons */
+    color: white;
+    border: none;
+    border-radius: 8px; /* Rounded buttons */
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease; /* Smooth transitions for hover */
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3); /* Button shadow */
+    cursor: pointer;
+}
+.stButton>button:hover {
+    background-image: linear-gradient(45deg, #0056b3, #0099b3); /* Darker gradient on hover */
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.5); /* Enhanced shadow on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+}
+
+/* Selectboxes and Text Inputs */
+.stSelectbox>div>div, .stTextInput>div>div>input, .stTextArea>div>div>textarea, .stFileUploader>section {
+    background-color: #2a2a40; /* Darker background for input fields */
+    color: #e0e0e0; /* Text color inside inputs */
+    border: 1px solid #00aaff; /* Border with accent color */
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+.stSelectbox .css-1dbjc4n-base-Input { /* Targeting the input part of selectbox */
+    color: #e0e0e0;
+}
+.stSelectbox .css-1dbjc4n-base-Input::placeholder {
+    color: #888;
+}
+
+/* Dataframes */
+.stDataFrame {
+    color: #e0e0e0;
+    background-color: #2a2a40;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures rounded corners apply to content */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.stDataFrame table {
+    background-color: #2a2a40;
+    width: 100%; /* Ensure table takes full width */
+}
+.stDataFrame th {
+    background-color: #3a3a50; /* Header background */
+    color: #00e0ff; /* Header text with accent */
+    font-weight: bold;
+    padding: 10px;
+    text-align: left;
+}
+.stDataFrame td {
+    padding: 10px;
+    border-bottom: 1px solid #3a3a50; /* Subtle row separator */
+}
+.stDataFrame tr:nth-child(even) {
+    background-color: #2e2e42; /* Zebra striping for readability */
+}
+
+/* Sidebar styling */
+.stSidebar {
+    background-color: #1a1a2e; /* Match main body background */
+    color: #e0e0e0;
+    border-right: 2px solid #00aaff; /* Accent line on the right */
+    box-shadow: 2px 0 10px rgba(0, 255, 255, 0.1); /* Subtle shadow */
+}
+.stSidebar .stRadio div[role="radiogroup"] label {
+    color: #e0e0e0; /* Radio button text color */
+}
+.stSidebar h1, .stSidebar h2, .stSidebar h3 {
+    color: #00e0ff; /* Sidebar headings */
+}
+
+/* Expander styling */
+.stExpander {
+    background-color: #2a2a40;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    border: 1px solid #00aaff;
+}
+.stExpander > div > div > p {
+    color: #e0e0e0; /* Expander header text */
+    font-weight: bold;
+}
+.stExpander .streamlit-expanderContent {
+    color: #c0c0c0; /* Expander content text */
+}
+
+/* Metric styling */
+.stMetric {
+    background-color: #2a2a40;
+    border-radius: 8px;
     padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+}
+.stMetric > div > div > div > div {
+    color: #00e0ff; /* Metric value color */
+    font-size: 2.5rem; /* Larger font for value */
+    font-weight: bold;
+}
+.stMetric > div > div > div > label {
+    color: #c0c0c0; /* Metric label color */
+    font-size: 1rem;
+    font-weight: normal;
+}
+
+/* Horizontal Rule */
+hr {
+    border-top: 2px solid #00aaff; /* Thicker, accent-colored HR */
+    margin: 2em 0;
+}
+
+/* Caption styling */
+.stCaption {
+    color: #a0a0a0;
+    font-size: 0.85em;
+    margin-top: 5px;
+}
+
+/* Specific styling for the initial header div */
+div[data-testid="stMarkdownContainer"] div[style*="padding: 10px;"] {
+    background-color: rgba(30, 30, 46, 0.9); /* Ensure this specific div matches the main container */
+    border-radius: 12px;
+    padding: 10px; /* Keep original padding */
+    box-shadow: 0 4px 15px rgba(0, 255, 255, 0.1);
+    margin-bottom: 20px; /* Space below the header */
 }
 
 </style>
 """
 
 st.markdown(cyber_grid_css, unsafe_allow_html=True)
-# --- End of new code for cyber grid background ---
+# --- End of new code for cyber grid background and overall styling ---
 
 
-# Theme toggle (keep existing logic)
+# Theme toggle (existing logic, but now the default dark theme is enhanced by CSS)
 if "theme" not in st.session_state:
-    st.session_state.theme = "Light"
+    st.session_state.theme = "Dark" # Set default to Dark theme
 
 chosen_theme = st.sidebar.radio(
     "Choose Theme", ["Light", "Dark"],
-    index=0 if st.session_state.theme == "Light" else 1
+    index=0 if st.session_state.theme == "Light" else 1 # This will still work for the toggle, but the CSS overrides the background.
 )
 st.session_state.theme = chosen_theme
 
-# The following light_style/dark_style will still apply to the content *within* the markdown div,
-# but the body background will be handled by the CSS injected above.
-light_style = "background-color: #f5f5f5; color: black;"
-dark_style = "background-color: #1e1e1e; color: white;" # This will be less visible if you have the new .main .block-container style
+# The light_style/dark_style variables will primarily affect the text color within the initial markdown div
+# The overall background is now handled by the injected CSS.
+light_style = "background-color: transparent; color: black;" # Transparent to let grid show
+dark_style = "background-color: transparent; color: white;" # Transparent to let grid show
 style = light_style if st.session_state.theme == "Light" else dark_style
 
 
@@ -98,7 +248,6 @@ st.markdown(f"""
 <hr style='border-top: 2px solid #bbb;'>
 """, unsafe_allow_html=True)
 
-# ... (rest of your app (1).py code) ...
 # Model selector
 model_choice = st.sidebar.selectbox(
     "Choose a Model", ["Random Forest", "Logistic Regression"]
@@ -129,9 +278,9 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     st.markdown("""
     This is a lightweight, AI-powered intrusion detection dashboard built with:
-    - Random Forest or Logistic Regression  
-    - NSL-KDD dataset  
-    - Real-time visualization  
+    - Random Forest or Logistic Regression
+    - NSL-KDD dataset
+    - Real-time visualization
     Try uploading a CSV or use sample data to test the IDS engine.
     """)
 
@@ -175,33 +324,52 @@ if st.session_state.get("sample_loaded") and data is not None:
 
     st.markdown("---")
     st.subheader("2. Summary Metrics")
-    st.metric("Total Records", len(data))
-    st.metric("Attacks Detected", total_attacks)
-    st.metric("Normal Traffic", total_normal)
-    st.metric("Attack %", f"{(total_attacks / len(data)) * 100:.2f}%")
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("Total Records", len(data))
+    with col2:
+        st.metric("Attacks Detected", total_attacks)
+    with col3:
+        st.metric("Normal Traffic", total_normal)
+    with col4:
+        st.metric("Attack %", f"{(total_attacks / len(data)) * 100:.2f}%")
 
-    st.dataframe(pd.DataFrame({
-        "Category": ["Total Records", "Attacks Detected", "Normal Traffic", "Attack %"],
-        "Value": [len(data), total_attacks, total_normal, f"{(total_attacks / len(data)) * 100:.2f}%"]
-    }))
+    # Removed the redundant dataframe for summary metrics as st.metric is better
+    # st.dataframe(pd.DataFrame({
+    #     "Category": ["Total Records", "Attacks Detected", "Normal Traffic", "Attack %"],
+    #     "Value": [len(data), total_attacks, total_normal, f"{(total_attacks / len(data)) * 100:.2f}%"]
+    # }))
 
     st.markdown("---")
     st.subheader("3. Prediction Breakdown")
     pred_counts = data["Prediction"].value_counts()
     colors = ["#2ecc71" if label == "Normal" else "#e74c3c" for label in pred_counts.index]
     fig, ax = plt.subplots()
-    bars = ax.bar(pred_counts.index, pred_counts.values, color=colors)
+    ax.bar(pred_counts.index, pred_counts.values, color=colors)
     ax.set_xlabel("Prediction")
     ax.set_ylabel("Count")
     ax.set_title("Attack vs Normal")
     ax.grid(True, linestyle='--', alpha=0.5)
-    for bar in bars:
+    # Set plot background and text colors for dark theme
+    fig.patch.set_facecolor('#2a2a40') # Plot background
+    ax.set_facecolor('#2a2a40') # Axes background
+    ax.tick_params(axis='x', colors='#e0e0e0') # X-axis tick labels
+    ax.tick_params(axis='y', colors='#e0e0e0') # Y-axis tick labels
+    ax.xaxis.label.set_color('#00e0ff') # X-axis label color
+    ax.yaxis.label.set_color('#00e0ff') # Y-axis label color
+    ax.title.set_color('#00e0ff') # Title color
+    ax.spines['bottom'].set_color('#00aaff') # Axis lines
+    ax.spines['left'].set_color('#00aaff')
+    ax.spines['top'].set_color('#00aaff')
+    ax.spines['right'].set_color('#00aaff')
+
+    for i, bar in enumerate(ax.patches):
         height = bar.get_height()
         ax.annotate(f'{int(height)}',
                     xy=(bar.get_x() + bar.get_width() / 2, height),
                     xytext=(0, 3),
                     textcoords="offset points",
-                    ha='center', va='bottom', fontsize=10)
+                    ha='center', va='bottom', fontsize=10, color='#e0e0e0') # Annotation color
     st.pyplot(fig)
     st.caption("🟢 Green = Normal   🔴 Red = Attack")
 
@@ -211,13 +379,18 @@ if st.session_state.get("sample_loaded") and data is not None:
     cm = confusion_matrix(true_labels, predictions)
     acc = accuracy_score(true_labels, predictions)
 
-    st.write(f"**Accuracy Score:** {acc*100:.2f}%")
+    st.write(f"**Accuracy Score:** <span style='color:#00e0ff; font-size:1.2em;'>{acc*100:.2f}%</span>", unsafe_allow_html=True)
     fig_cm, ax_cm = plt.subplots()
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
                 xticklabels=["Attack", "Normal"],
-                yticklabels=["Attack", "Normal"], ax=ax_cm)
-    ax_cm.set_xlabel("Predicted")
-    ax_cm.set_ylabel("Actual")
+                yticklabels=["Attack", "Normal"], ax=ax_cm,
+                annot_kws={"color": "black"}) # Ensure annotation text is visible
+    ax_cm.set_xlabel("Predicted", color='#00e0ff')
+    ax_cm.set_ylabel("Actual", color='#00e0ff')
+    ax_cm.tick_params(axis='x', colors='#e0e0e0')
+    ax_cm.tick_params(axis='y', colors='#e0e0e0')
+    fig_cm.patch.set_facecolor('#2a2a40') # Plot background
+    ax_cm.set_facecolor('#2a2a40') # Axes background
     st.pyplot(fig_cm)
 
     st.markdown("---")
@@ -225,6 +398,7 @@ if st.session_state.get("sample_loaded") and data is not None:
     if hasattr(model, "feature_importances_"):
         importances = model.feature_importances_
         feat_series = pd.Series(importances, index=feature_list).sort_values(ascending=False).head(10)
+        # Streamlit's bar_chart uses its own styling, which usually adapts well.
         st.bar_chart(feat_series)
     else:
         st.info("Feature importances not available for this model.")
@@ -239,7 +413,8 @@ if st.session_state.get("sample_loaded") and data is not None:
             pred = model.predict(live_row)[0]
             label = "Normal" if pred == 1 else "Attack"
             conf = f"{max(model.predict_proba(live_row)[0]) * 100:.2f}%"
-            live_placeholder.markdown(f"**Row {i+1}:** `{label}` (Confidence: {conf})")
+            color_code = "green" if label == "Normal" else "red"
+            live_placeholder.markdown(f"**Row {i+1}:** `<span style='color:{color_code}; font-weight:bold;'>{label}</span>` (Confidence: {conf})", unsafe_allow_html=True)
             time.sleep(0.6)
 
     st.markdown("---")
@@ -250,15 +425,15 @@ if st.session_state.get("sample_loaded") and data is not None:
             attack_data['lat'] = np.random.uniform(8.0, 37.0, len(attack_data))
             attack_data['lon'] = np.random.uniform(68.0, 97.0, len(attack_data))
             st.pydeck_chart(pdk.Deck(
-                map_style='mapbox://styles/mapbox/dark-v9' if st.session_state.theme == 'Dark' else 'mapbox://styles/mapbox/light-v9',
+                map_style='mapbox://styles/mapbox/dark-v9', # Force dark map style for consistency
                 initial_view_state=pdk.ViewState(latitude=22.0, longitude=78.0, zoom=3.5),
                 layers=[
                     pdk.Layer(
                         'ScatterplotLayer',
                         data=attack_data,
                         get_position='[lon, lat]',
-                        get_color='[255, 0, 0, 160]',
-                        get_radius=40000,
+                        get_color='[255, 0, 0, 180]', # Brighter red for attacks
+                        get_radius=50000, # Slightly larger radius
                     )
                 ]
             ))
@@ -286,23 +461,32 @@ if st.session_state.get("sample_loaded") and data is not None:
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(buffer)
         styles = getSampleStyleSheet()
+
+        # Custom styles for PDF to match dark theme aesthetics (simplified)
+        styles.add(ParagraphStyle(name='TitleDark', fontSize=24, leading=28, alignment=TA_CENTER,
+                                  fontName='Helvetica-Bold', textColor=colors.HexColor('#00e0ff')))
+        styles.add(ParagraphStyle(name='NormalDark', fontSize=12, leading=14,
+                                  fontName='Helvetica', textColor=colors.HexColor('#c0c0c0')))
+        styles.add(ParagraphStyle(name='Heading1Dark', fontSize=18, leading=22,
+                                  fontName='Helvetica-Bold', textColor=colors.HexColor('#00e0ff')))
+
         elements = [
-            Image("logo.png", width=100, height=60),
+            Image("logo.png", width=1.5*inch, height=0.9*inch), # Use inch for sizing
             Spacer(1, 12),
-            Paragraph("AI-Powered Intrusion Detection Report", styles['Title']),
+            Paragraph("AI-Powered Intrusion Detection Report", styles['TitleDark']),
             Spacer(1, 24),
-            Paragraph(f"Date: {datetime.now().strftime('%B %d, %Y')}", styles['Normal']),
+            Paragraph(f"Date: {datetime.now().strftime('%B %d, %Y')}", styles['NormalDark']),
             Spacer(1, 12),
-            Paragraph(f"Model Used: {model_choice}", styles['Normal']),
-            Paragraph(f"Total Records: {len(data)}", styles['Normal']),
-            Paragraph(f"Attacks Detected: {total_attacks}", styles['Normal']),
-            Paragraph(f"Normal Traffic: {total_normal}", styles['Normal']),
-            Paragraph(f"Attack %: {(total_attacks / len(data)) * 100:.2f}%", styles['Normal']),
+            Paragraph(f"Model Used: {model_choice}", styles['NormalDark']),
+            Paragraph(f"Total Records: {len(data)}", styles['NormalDark']),
+            Paragraph(f"Attacks Detected: {total_attacks}", styles['NormalDark']),
+            Paragraph(f"Normal Traffic: {total_normal}", styles['NormalDark']),
+            Paragraph(f"Attack %: {(total_attacks / len(data)) * 100:.2f}%", styles['NormalDark']),
             Spacer(1, 24),
-            Paragraph("This report summarizes the intrusion detection results for the uploaded network traffic logs using AI-based classifiers.", styles['Normal']),
+            Paragraph("This report summarizes the intrusion detection results for the uploaded network traffic logs using AI-based classifiers.", styles['NormalDark']),
             Spacer(1, 36),
-            Paragraph("Generated by Prasamita Bangal.", styles['Normal']),
-            Paragraph("Mahindra University", styles['Normal']),
+            Paragraph("Generated by Prasamita Bangal.", styles['NormalDark']),
+            Paragraph("Mahindra University", styles['NormalDark']),
         ]
         doc.build(elements)
         st.download_button(
@@ -331,3 +515,4 @@ if st.session_state.get("sample_loaded") and data is not None:
     """, unsafe_allow_html=True)
 else:
     st.info("👆 Please upload your `preprocessed_test_data.csv` file or click 'Try with Sample Data' to see predictions.")
+
