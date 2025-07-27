@@ -9,8 +9,10 @@ from sklearn.metrics import confusion_matrix, accuracy_score
 import seaborn as sns
 import io
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle # Import ParagraphStyle
 from reportlab.lib.units import inch # Import inch for image sizing
+from reportlab.lib import colors # Import colors for PDF styling
+from reportlab.lib.enums import TA_CENTER # Import for text alignment
 
 st.set_page_config(page_title="AI IDS", layout="centered")
 
@@ -142,12 +144,13 @@ p, li, .stMarkdown {
     background-color: #2e2e42; /* Zebra striping for readability */
 }
 
-/* Sidebar styling */
+/* Sidebar styling - TEMPORARILY BRIGHT RED FOR DEBUGGING */
 .stSidebar {
-    background-color: #1a1a2e; /* Match main body background */
+    background-color: #FF0000; /* TEMPORARY: Bright red to ensure visibility */
     color: #e0e0e0;
     border-right: 2px solid #00aaff; /* Accent line on the right */
     box-shadow: 2px 0 10px rgba(0, 255, 255, 0.1); /* Subtle shadow */
+    z-index: 9999; /* Ensure it's on top of other elements */
 }
 .stSidebar .stRadio div[role="radiogroup"] label {
     color: #e0e0e0; /* Radio button text color */
@@ -334,12 +337,6 @@ if st.session_state.get("sample_loaded") and data is not None:
     with col4:
         st.metric("Attack %", f"{(total_attacks / len(data)) * 100:.2f}%")
 
-    # Removed the redundant dataframe for summary metrics as st.metric is better
-    # st.dataframe(pd.DataFrame({
-    #     "Category": ["Total Records", "Attacks Detected", "Normal Traffic", "Attack %"],
-    #     "Value": [len(data), total_attacks, total_normal, f"{(total_attacks / len(data)) * 100:.2f}%"]
-    # }))
-
     st.markdown("---")
     st.subheader("3. Prediction Breakdown")
     pred_counts = data["Prediction"].value_counts()
@@ -510,7 +507,7 @@ if st.session_state.get("sample_loaded") and data is not None:
         """)
 
     st.markdown("""
-    
+    ---
     <p style='text-align: center;'>🔒 Powered by Machine Learning | Streamlit App by <b>Prasamita Bangal.</b></p>
     """, unsafe_allow_html=True)
 else:
