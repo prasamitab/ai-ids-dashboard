@@ -510,7 +510,7 @@ if st.session_state.get("sample_loaded") and data is not None:
         """)
 
     st.markdown("""
-    ---
+    
     <p style='text-align: center;'>🔒 Powered by Machine Learning | Streamlit App by <b>Prasamita Bangal.</b></p>
     """, unsafe_allow_html=True)
 else:
